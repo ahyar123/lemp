@@ -1,0 +1,68 @@
+version: '3.8'
+
+# Services
+services:
+
+    # PHP Service
+    php:
+        container_name: php
+        build:
+            dockerfile: php-dockerfile
+        volumes:
+            - './php-files-app1:/var/www/html/app1'
+            - './php-files-app2:/var/www/html/app2'
+        depends_on:
+            - mariadb
+
+    # App 1 Nginx Service
+    App1:
+        container_name: nginx-app1
+        image: nginx:latest
+        ports:
+            - 8080:80
+        links:
+            - 'php'
+        volumes:
+            - './php-files-app1:/var/www/html/app1'
+            - './nginx-conf-app1:/etc/nginx/conf.d'
+        depends_on:
+            - php
+
+
+    # App 2 Nginx Service
+    App2:
+        container_name: nginx-app2
+        image: nginx:latest
+        ports:
+            - 8081:80
+        links:
+            - 'php'
+        volumes:
+            - './php-files-app2:/var/www/html/app2'
+            - './nginx-conf-app2:/etc/nginx/conf.d'
+        depends_on:
+            - php
+
+    # MariaDB Service
+    mariadb:
+        image: mariadb:10.9
+        environment:
+            MYSQL_ROOT_PASSWORD: Telekomunikas1
+        volumes:
+            - mysqldata:/var/lib/mysql
+
+    # phpMyAdmin Service
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin:latest
+        ports:
+            - 8090:80
+        environment:
+            PMA_HOST: mariadb
+        depends_on:
+            - mariadb
+
+# Volumes
+volumes:
+
+  mysqldata:
+
