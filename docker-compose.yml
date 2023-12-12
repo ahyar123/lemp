@@ -11,6 +11,8 @@ services:
         volumes:
             - './php-files-app1:/var/www/html/app1'
             - './php-files-app2:/var/www/html/app2'
+            - './php-files-app3:/var/www/html/app3'
+
         depends_on:
             - mariadb
 
@@ -40,6 +42,20 @@ services:
         volumes:
             - './php-files-app2:/var/www/html/app2'
             - './nginx-conf-app2:/etc/nginx/conf.d'
+        depends_on:
+            - php
+
+    # App 1 Nginx Service
+    App3:
+        container_name: nginx-app3
+        image: nginx:latest
+        ports:
+            - 8083:80
+        links:
+            - 'php'
+        volumes:
+            - './php-files-app3:/var/www/html/app3'
+            - './nginx-conf-app3:/etc/nginx/conf.d'
         depends_on:
             - php
 
